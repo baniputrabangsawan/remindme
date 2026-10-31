@@ -88,18 +88,28 @@ const MessageBar = (props) => {
 
   return (
     <Paper
-      elevation={3}
+      elevation={0}
       sx={{
         display: "flex",
         position: "fixed",
         bottom: 0,
         right: 0,
-        padding: 2,
+        alignItems: "center",
+        gap: 0.5,
+        padding: "10px 12px calc(10px + env(safe-area-inset-bottom))",
         width: { xs: "100%", sm: `calc(100% - ${Navigation.width}px)` },
-        backgroundColor: (theme) => (theme.palette.mode === "light" ? theme.palette.grey[100] : theme.palette.grey[900]),
+        backgroundColor: "background.paper",
+        borderTop: "1px solid",
+        borderColor: "divider",
+        zIndex: 1050,
       }}
     >
-      <IconButton color="inherit" size="large" edge="start" onClick={props.onOpenDialogClick} aria-label={t("message_bar_show_dialog")}>
+      <IconButton
+        color="inherit"
+        onClick={props.onOpenDialogClick}
+        aria-label={t("message_bar_show_dialog")}
+        sx={{ flexShrink: 0, color: "text.secondary" }}
+      >
         <KeyboardArrowUpIcon />
       </IconButton>
       <TextField
@@ -110,7 +120,8 @@ const MessageBar = (props) => {
         role="textbox"
         type="text"
         fullWidth
-        variant="standard"
+        variant="outlined"
+        size="small"
         value={props.message}
         onChange={(ev) => props.onMessageChange(ev.target.value)}
         onKeyPress={(ev) => {
@@ -120,9 +131,27 @@ const MessageBar = (props) => {
           }
         }}
         onPaste={handlePaste}
+        sx={{
+          "& .MuiOutlinedInput-root": {
+            borderRadius: 8,
+            backgroundColor: "action.hover",
+          },
+        }}
       />
-      <IconButton color="inherit" size="large" edge="end" onClick={handleSendClick} aria-label={t("message_bar_publish")}>
-        <SendIcon />
+      <IconButton
+        color="primary"
+        onClick={handleSendClick}
+        aria-label={t("message_bar_publish")}
+        sx={{
+          flexShrink: 0,
+          backgroundColor: "primary.main",
+          color: "primary.contrastText",
+          width: 40,
+          height: 40,
+          "&:hover": { backgroundColor: "primary.main", opacity: 0.9 },
+        }}
+      >
+        <SendIcon fontSize="small" />
       </IconButton>
       <Portal>
         <Snackbar

@@ -204,89 +204,136 @@ const NotificationItem = (props) => {
   const showActions = hasAttachmentActions || hasClickAction || hasUserActions;
 
   return (
-    <Card sx={{ padding: 1 }} role="listitem" aria-label={t("notifications_list_item")}>
-      <CardContent>
-        <Tooltip title={t("notifications_delete")} enterDelay={500}>
-          <IconButton onClick={handleDelete} sx={{ float: "right", marginRight: -1, marginTop: -1 }} aria-label={t("notifications_delete")}>
-            <CloseIcon />
-          </IconButton>
-        </Tooltip>
-        {notification.new === 1 && (
-          <Tooltip title={t("notifications_mark_read")} enterDelay={500}>
-            <IconButton
-              onClick={handleMarkRead}
-              sx={{ float: "right", marginRight: -0.5, marginTop: -1 }}
-              aria-label={t("notifications_mark_read")}
-            >
-              <CheckIcon />
-            </IconButton>
-          </Tooltip>
-        )}
-        <Typography sx={{ fontSize: 14 }} color="text.secondary">
-          {date}
-          {[1, 2, 4, 5].includes(notification.priority) && (
-            <img
-              src={priorityFiles[notification.priority]}
-              alt={t("notifications_priority_x", {
-                priority: notification.priority,
-              })}
-              style={{ verticalAlign: "bottom" }}
-            />
-          )}
-          {notification.new === 1 && (
-            <svg
-              style={{ width: "8px", height: "8px", marginLeft: "4px" }}
-              viewBox="0 0 100 100"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-label={t("notifications_new_indicator")}
-            >
-              <circle cx="50" cy="50" r="50" fill="#338574" />
-            </svg>
-          )}
-        </Typography>
+    <Card
+      sx={{
+        borderRadius: 4,
+        border: "1px solid",
+        borderColor: notification.new === 1 ? "text.primary" : "divider",
+        backgroundColor: notification.new === 1 ? "background.paper" : "background.paper",
+        boxShadow: "none",
+        overflow: "hidden",
+        position: "relative",
+        "&::before":
+          notification.new === 1
+            ? {
+                content: '""',
+                position: "absolute",
+                left: 0,
+                top: 0,
+                bottom: 0,
+                width: "3px",
+                backgroundColor: "text.primary",
+              }
+            : {},
+      }}
+      role="listitem"
+      aria-label={t("notifications_list_item")}
+    >
+      <CardContent sx={{ padding: { xs: "14px 16px", sm: "16px 20px" }, "&:last-child": { paddingBottom: { xs: "14px", sm: "16px" } } }}>
+        <Box sx={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 1 }}>
+          <Box sx={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 0.75, minWidth: 0 }}>
+            <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500, letterSpacing: "0.02em" }}>
+              {date}
+            </Typography>
+            {[1, 2, 4, 5].includes(notification.priority) && (
+              <img
+                src={priorityFiles[notification.priority]}
+                alt={t("notifications_priority_x", {
+                  priority: notification.priority,
+                })}
+                style={{ width: "14px", height: "14px" }}
+              />
+            )}
+            {notification.new === 1 && (
+              <Box
+                sx={{
+                  width: 7,
+                  height: 7,
+                  borderRadius: "50%",
+                  backgroundColor: "text.primary",
+                  flexShrink: 0,
+                }}
+                aria-label={t("notifications_new_indicator")}
+              />
+            )}
+          </Box>
+          <Box sx={{ display: "flex", flexShrink: 0, marginRight: { xs: "-8px", sm: "-12px" }, marginTop: { xs: "-6px", sm: "-8px" } }}>
+            {notification.new === 1 && (
+              <Tooltip title={t("notifications_mark_read")} enterDelay={500}>
+                <IconButton size="small" onClick={handleMarkRead} aria-label={t("notifications_mark_read")}>
+                  <CheckIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            )}
+            <Tooltip title={t("notifications_delete")} enterDelay={500}>
+              <IconButton size="small" onClick={handleDelete} aria-label={t("notifications_delete")}>
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        </Box>
         {notification.title && (
-          <Typography variant="h5" component="div" role="rowheader">
+          <Typography
+            variant="subtitle1"
+            component="div"
+            role="rowheader"
+            sx={{
+              fontWeight: 600,
+              mt: 0.5,
+              mb: notification.message ? 0.25 : 0,
+              lineHeight: 1.35,
+              textWrap: "pretty",
+            }}
+          >
             {formatTitle(notification)}
           </Typography>
         )}
-        <Typography variant="body1" sx={{ whiteSpace: "pre-line", overflowX: "auto" }}>
+        <Typography variant="body2" sx={{ whiteSpace: "pre-line", overflowX: "auto", lineHeight: 1.55, color: "text.secondary" }}>
           <NotificationBody notification={notification} />
           {maybeActionErrors(notification)}
         </Typography>
         {attachment && <Attachment attachment={attachment} />}
         {tags && (
-          <Typography sx={{ fontSize: 14 }} color="text.secondary">
+          <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 1 }}>
             {t("notifications_tags")}: {tags}
           </Typography>
         )}
       </CardContent>
       {showActions && (
-        <CardActions sx={{ paddingTop: 0 }}>
+        <CardActions sx={{ padding: "0 12px 10px", gap: 0.5 }}>
           {hasAttachmentActions && (
             <>
               <Tooltip title={t("notifications_attachment_copy_url_title")}>
-                <Button onClick={() => handleCopy(attachment.url)}>{t("notifications_attachment_copy_url_button")}</Button>
+                <Button size="small" onClick={() => handleCopy(attachment.url)}>
+                  {t("notifications_attachment_copy_url_button")}
+                </Button>
               </Tooltip>
               <Tooltip
                 title={t("notifications_attachment_open_title", {
                   url: attachment.url,
                 })}
               >
-                <Button onClick={() => openUrl(attachment.url)}>{t("notifications_attachment_open_button")}</Button>
+                <Button size="small" onClick={() => openUrl(attachment.url)}>
+                  {t("notifications_attachment_open_button")}
+                </Button>
               </Tooltip>
             </>
           )}
           {hasClickAction && (
             <>
               <Tooltip title={t("notifications_click_copy_url_title")}>
-                <Button onClick={() => handleCopy(notification.click)}>{t("notifications_click_copy_url_button")}</Button>
+                <Button size="small" onClick={() => handleCopy(notification.click)}>
+                  {t("notifications_click_copy_url_button")}
+                </Button>
               </Tooltip>
               <Tooltip
                 title={t("notifications_actions_open_url_title", {
                   url: notification.click,
                 })}
               >
-                <Button onClick={() => openUrl(notification.click)}>{t("notifications_click_open_button")}</Button>
+                <Button size="small" onClick={() => openUrl(notification.click)}>
+                  {t("notifications_click_open_button")}
+                </Button>
               </Tooltip>
             </>
           )}

@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Remindme</title>
+    <title>remindme</title>
 
     <!-- Mobile view -->
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
@@ -50,11 +50,11 @@
        src/app/splash.js). Background matches the app background for a seamless handoff. -->
     <style>
       html {
-        background-color: #ffffff;
+        background-color: #f7f7f8;
       }
 
       html.dark {
-        background-color: #0c0c0c;
+        background-color: #0b0b0d;
       }
 
       #splash {
@@ -63,15 +63,14 @@
         z-index: 200000;
         display: flex;
         align-items: center;
-        justify-content: center;
-        background-color: #ffffff;
+        background-color: #f7f7f8;
         opacity: 1;
         /* Background fade = the app fading in once the logo is gone (see src/app/splash.js). */
         transition: opacity 0.1s ease-out;
       }
 
       html.dark #splash {
-        background-color: #0c0c0c;
+        background-color: #0b0b0d;
       }
 
       #splash.splash-hidden {

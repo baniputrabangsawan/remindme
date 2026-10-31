@@ -179,9 +179,8 @@ const Main = (props) => (
       padding: { xs: 0, md: 3 },
       paddingBottom: { xs: "calc(56px + env(safe-area-inset-bottom) + 72px)", md: 3 },
       width: { sm: `calc(100% - ${Navigation.width}px)` },
-      height: "100dvh",
+      backgroundColor: ({ palette }) => (palette.mode === "light" ? "#f7f7f8" : "#0b0b0d"),
       overflow: "auto",
-      backgroundColor: ({ palette }) => (palette.mode === "light" ? palette.grey[100] : palette.grey[900]),
     }}
   >
     {props.children}
