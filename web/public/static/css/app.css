@@ -2,10 +2,19 @@
 
 a,
 a:visited {
-  color: #338574;
+  color: #111111;
 }
 
 a:hover {
-  text-decoration: none;
-  color: #317f6f;
+  text-decoration: underline;
+  color: #000000;
+}
+
+html.dark a,
+html.dark a:visited {
+  color: #fafafa;
+}
+
+html.dark a:hover {
+  color: #ffffff;
 }
