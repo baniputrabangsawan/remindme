@@ -2,6 +2,8 @@ import {
   Alert,
   AlertTitle,
   Badge,
+  BottomNavigation,
+  BottomNavigationAction,
   Box,
   Button,
   CircularProgress,
@@ -51,12 +53,13 @@ import { useNotificationPermissionListener, useVersionChangeListener } from "./h
 import { usePrefCache } from "./PrefCache";
 import prefs from "../app/Prefs";
 
-const navWidth = 280;
+const navWidth = 264;
 
 const Navigation = (props) => {
   const navigationList = <NavList {...props} />;
   return (
     <Box component="nav" role="navigation" sx={{ width: { sm: Navigation.width }, flexShrink: { sm: 0 } }}>
+      <MobileTabBar {...props} />
       {/* Mobile drawer; only shown if menu icon clicked (mobile open) and display is small */}
       <Drawer
         variant="temporary"
@@ -87,6 +90,64 @@ const Navigation = (props) => {
   );
 };
 Navigation.width = navWidth;
+
+// Mobile bottom tab bar: primary destinations one tap away on phones (360px and up).
+// Secondary items (topics, account, docs, alerts) stay in the hamburger drawer.
+const MobileTabBar = (props) => {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const subscriptions = props.subscriptions || [];
+  const newCount = subscriptions.reduce((sum, s) => sum + (s.new || 0), 0);
+
+  return (
+    <BottomNavigation
+      sx={{
+        display: { xs: "flex", sm: "none" },
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1100,
+        borderTop: "1px solid",
+        borderColor: "divider",
+        paddingBottom: "env(safe-area-inset-bottom)",
+        height: "auto",
+      }}
+    >
+      <BottomNavigationAction
+        label={t("nav_button_all_notifications")}
+        icon={
+          newCount > 0 ? (
+            <Badge badgeContent={newCount > 99 ? "99+" : newCount} color="primary">
+              <ChatBubbleOutlineIcon />
+            </Badge>
+          ) : (
+            <ChatBubbleOutlineIcon />
+          )
+        }
+        selected={location.pathname === config.app_root}
+        onClick={() => navigate(routes.app)}
+      />
+      <BottomNavigationAction
+        label={t("nav_button_publish_message")}
+        icon={<Send />}
+        onClick={() => props.onPublishMessageClick()}
+      />
+      <BottomNavigationAction
+        label={t("nav_button_subscribe")}
+        icon={<AddIcon />}
+        onClick={() => props.onMobileDrawerToggle()}
+      />
+      <BottomNavigationAction
+        label={t("nav_button_settings")}
+        icon={<SettingsIcon />}
+        selected={location.pathname === routes.settings}
+        onClick={() => navigate(routes.settings)}
+      />
+    </BottomNavigation>
+  );
+};
 
 const NavList = (props) => {
   const theme = useTheme();
@@ -144,9 +205,32 @@ const NavList = (props) => {
 
   return (
     <>
+      <Toolbar
+        sx={{
+          display: { xs: "flex", sm: "none" },
+          minHeight: "56px",
+          paddingTop: "env(safe-area-inset-top)",
+          paddingLeft: "16px",
+          borderBottom: "1px solid",
+          borderColor: "divider",
+        }}
+      >
+        <Typography variant="h6" sx={{ fontWeight: 700, letterSpacing: "-0.02em" }}>
+          remindme
+        </Typography>
+      </Toolbar>
       <Toolbar sx={{ display: { xs: "none", sm: "block" } }} />
       {/* The list scrolls on its own, so the upgrade banner below it never covers the last items */}
-      <List component="nav" sx={{ paddingTop: { xs: 0, sm: alertVisible ? 0 : "" }, flexGrow: 1, overflowY: "auto" }}>
+      <List
+        component="nav"
+        sx={{
+          paddingTop: { xs: 1, sm: alertVisible ? 0 : "" },
+          paddingLeft: { xs: 1, sm: 0 },
+          paddingRight: { xs: 1, sm: 0 },
+          flexGrow: 1,
+          overflowY: "auto",
+        }}
+      >
         {versionChanged && <VersionUpdateBanner />}
         {showNotificationPermissionRequired && <NotificationPermissionRequired />}
         {showNotificationPermissionDenied && <NotificationPermissionDeniedAlert />}

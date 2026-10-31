@@ -31,7 +31,7 @@ const ActionBar = (props) => {
   const location = useLocation();
   const isLaunchedPWA = useIsLaunchedPWA();
 
-  let title = "ntfy";
+  let title = "remindme";
   if (props.selected) {
     title = topicDisplayName(props.selected);
   } else if (location.pathname === routes.settings) {
@@ -41,18 +41,11 @@ const ActionBar = (props) => {
   }
 
   const getActionBarBackground = () => {
-    if (isLaunchedPWA) {
-      return "#317f6f";
-    }
+    return theme.palette.mode === "light" ? "#111111" : "#fafafa";
+  };
 
-    switch (theme.palette.mode) {
-      case "dark":
-        return "linear-gradient(150deg, #203631 0%, #2a6e60 100%)";
-
-      case "light":
-      default:
-        return "linear-gradient(150deg, #338574 0%, #56bda8 100%)";
-    }
+  const getActionBarTextColor = () => {
+    return theme.palette.mode === "light" ? "#ffffff" : "#111111";
   };
 
   return (
@@ -62,12 +55,20 @@ const ActionBar = (props) => {
         width: "100%",
         zIndex: { sm: 1250 }, // > Navigation (1200), but < Dialog (1300)
         ml: { sm: `${Navigation.width}px` },
+        backgroundColor: getActionBarBackground(),
+        color: getActionBarTextColor(),
+        "& .MuiIconButton-root, & .MuiButton-root": {
+          color: getActionBarTextColor(),
+        },
       }}
     >
       <Toolbar
         sx={{
           pr: "24px",
-          background: getActionBarBackground(),
+          pl: { xs: "8px", sm: "24px" },
+          minHeight: { xs: "56px", sm: "64px" },
+          paddingTop: "env(safe-area-inset-top)",
+          alignItems: "center",
         }}
       >
         <IconButton
@@ -89,7 +90,7 @@ const ActionBar = (props) => {
             height: "28px",
           }}
         />
-        <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+        <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, fontSize: { xs: "1.1rem", sm: "1.25rem" } }}>
           {title}
         </Typography>
         {isLaunchedPWA && <ReloadIcon />}

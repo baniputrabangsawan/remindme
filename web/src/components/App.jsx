@@ -103,7 +103,7 @@ const App = () => {
 };
 
 const updateTitle = (newNotificationsCount) => {
-  document.title = newNotificationsCount > 0 ? `(${newNotificationsCount}) ntfy` : "ntfy";
+  document.title = newNotificationsCount > 0 ? `(${newNotificationsCount}) remindme` : "remindme";
   window.navigator.setAppBadge?.(newNotificationsCount);
   updateFavicon(newNotificationsCount);
 };
@@ -177,6 +177,7 @@ const Main = (props) => (
       flexGrow: 1,
       flexDirection: "column",
       padding: { xs: 0, md: 3 },
+      paddingBottom: { xs: "calc(56px + env(safe-area-inset-bottom) + 72px)", md: 3 },
       width: { sm: `calc(100% - ${Navigation.width}px)` },
       height: "100dvh",
       overflow: "auto",
