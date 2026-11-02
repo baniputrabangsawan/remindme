@@ -43,11 +43,11 @@ const ActionBar = (props) => {
   }
 
   const getActionBarBackground = () => {
-    return theme.palette.mode === "light" ? "#111111" : "#fafafa";
+    return theme.palette.mode === "light" ? "rgba(255, 255, 255, 0.95)" : "rgba(22, 22, 24, 0.95)";
   };
 
   const getActionBarTextColor = () => {
-    return theme.palette.mode === "light" ? "#ffffff" : "#111111";
+    return theme.palette.mode === "light" ? "#0a0a0a" : "#f5f5f7";
   };
 
   return (
@@ -58,8 +58,13 @@ const ActionBar = (props) => {
         zIndex: { sm: 1250 }, // > Navigation (1200), but < Dialog (1300)
         ml: { sm: `${Navigation.width}px` },
         backgroundColor: getActionBarBackground(),
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
         color: getActionBarTextColor(),
-        "& .MuiIconButton-root, & .MuiButton-root": {
+        borderBottom: "1px solid",
+        borderColor: "divider",
+        boxShadow: "none",
+        "& .MuiIconButton-root": {
           color: getActionBarTextColor(),
         },
       }}
@@ -203,7 +208,14 @@ const ProfileIcon = () => {
           color="inherit"
           variant="text"
           onClick={() => fadeNavigate(navigate, routes.login)}
-          sx={{ m: 1 }}
+          sx={{
+            fontWeight: 500,
+            fontSize: "0.85rem",
+            px: 1.5,
+            py: 0.5,
+            borderRadius: "8px",
+            color: "inherit",
+          }}
           aria-label={t("action_bar_sign_in")}
         >
           {t("action_bar_sign_in")}
@@ -211,9 +223,23 @@ const ProfileIcon = () => {
       )}
       {!session.exists() && config.enable_signup && (
         <Button
-          color="inherit"
-          variant="outlined"
+          variant="contained"
           onClick={() => fadeNavigate(navigate, routes.signup)}
+          sx={{
+            fontWeight: 600,
+            fontSize: "0.85rem",
+            px: 2,
+            py: 0.5,
+            ml: 1,
+            borderRadius: "20px",
+            boxShadow: "none",
+            backgroundColor: (theme) => (theme.palette.mode === "light" ? "#111111" : "#fafafa"),
+            color: (theme) => (theme.palette.mode === "light" ? "#ffffff" : "#111111"),
+            "&:hover": {
+              backgroundColor: (theme) => (theme.palette.mode === "light" ? "#222222" : "#e5e5e5"),
+              boxShadow: "none",
+            },
+          }}
           aria-label={t("action_bar_sign_up")}
         >
           {t("action_bar_sign_up")}

@@ -22,11 +22,14 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Trans, useTranslation } from "react-i18next";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
+import AddIcon from "@mui/icons-material/Add";
+import SubscribeDialog from "./SubscribeDialog";
+import routes from "./routes";
 import { copyToClipboard, formatBytes, formatDateTime, maybeActionErrors, openUrl, shortUrl, topicUrl, unmatchedTags } from "../app/utils";
 import { ACTION_BROADCAST, ACTION_COPY, ACTION_HTTP, ACTION_VIEW } from "../app/actions";
 import { formatMessage, formatTitle, isImage } from "../app/notificationUtils";
-import { LightboxBackdrop, Paragraph, VerticallyCenteredContainer } from "./styles";
+import { LightboxBackdrop, VerticallyCenteredContainer } from "./styles";
 import subscriptionManager from "../app/SubscriptionManager";
 import notifier from "../app/Notifier";
 import priority1 from "../img/priority-1.svg";
@@ -618,23 +621,50 @@ const NoNotifications = (props) => {
   const { t } = useTranslation();
   const topicUrlResolved = topicUrl(props.subscription.baseUrl, props.subscription.topic);
   return (
-    <VerticallyCenteredContainer maxWidth="xs">
-      <Typography variant="h5" align="center" sx={{ paddingBottom: 1 }}>
-        <img src={logoOutline} height="64" width="64" alt={t("action_bar_logo_alt")} />
-        <br />
+    <VerticallyCenteredContainer maxWidth="xs" sx={{ py: 6, px: 2, textAlign: "center" }}>
+      <Box
+        sx={{
+          width: 72,
+          height: 72,
+          borderRadius: "50%",
+          backgroundColor: "action.hover",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          mx: "auto",
+          mb: 2.5,
+        }}
+      >
+        <img src={logoOutline} height="40" width="40" alt={t("action_bar_logo_alt")} style={{ opacity: 0.85 }} />
+      </Box>
+      <Typography variant="h6" sx={{ fontWeight: 700, letterSpacing: "-0.01em", mb: 1, textWrap: "balance" }}>
         {t("notifications_none_for_topic_title")}
       </Typography>
-      <Paragraph>{t("notifications_none_for_topic_description")}</Paragraph>
-      <Paragraph>
-        {t("notifications_example")}:<br />
-        <tt>
-          {'$ curl -d "Hi" '}
-          {topicUrlResolved}
-        </tt>
-      </Paragraph>
-      <Paragraph>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 2.5, lineHeight: 1.6, maxWidth: 340, mx: "auto", textWrap: "pretty" }}>
+        {t("notifications_none_for_topic_description")}
+      </Typography>
+      <Box
+        sx={{
+          p: 1.5,
+          mb: 2.5,
+          borderRadius: "10px",
+          backgroundColor: "action.hover",
+          fontFamily: "monospace",
+          fontSize: "0.8rem",
+          overflowX: "auto",
+          textAlign: "left",
+          maxWidth: 340,
+          mx: "auto",
+        }}
+      >
+        <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 0.5, fontWeight: 600 }}>
+          {t("notifications_example")}:
+        </Typography>
+        <code>{`$ curl -d "Hi" ${topicUrlResolved}`}</code>
+      </Box>
+      <Box sx={{ color: "text.secondary", fontSize: "0.85rem" }}>
         <ForMoreDetails />
-      </Paragraph>
+      </Box>
     </VerticallyCenteredContainer>
   );
 };
@@ -644,44 +674,136 @@ const NoNotificationsWithoutSubscription = (props) => {
   const subscription = props.subscriptions[0];
   const topicUrlResolved = topicUrl(subscription.baseUrl, subscription.topic);
   return (
-    <VerticallyCenteredContainer maxWidth="xs">
-      <Typography variant="h5" align="center" sx={{ paddingBottom: 1 }}>
-        <img src={logoOutline} height="64" width="64" alt={t("action_bar_logo_alt")} />
-        <br />
+    <VerticallyCenteredContainer maxWidth="xs" sx={{ py: 6, px: 2, textAlign: "center" }}>
+      <Box
+        sx={{
+          width: 72,
+          height: 72,
+          borderRadius: "50%",
+          backgroundColor: "action.hover",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          mx: "auto",
+          mb: 2.5,
+        }}
+      >
+        <img src={logoOutline} height="40" width="40" alt={t("action_bar_logo_alt")} style={{ opacity: 0.85 }} />
+      </Box>
+      <Typography variant="h6" sx={{ fontWeight: 700, letterSpacing: "-0.01em", mb: 1, textWrap: "balance" }}>
         {t("notifications_none_for_any_title")}
       </Typography>
-      <Paragraph>{t("notifications_none_for_any_description")}</Paragraph>
-      <Paragraph>
-        {t("notifications_example")}:<br />
-        <tt>
-          {'$ curl -d "Hi" '}
-          {topicUrlResolved}
-        </tt>
-      </Paragraph>
-      <Paragraph>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 2.5, lineHeight: 1.6, maxWidth: 340, mx: "auto", textWrap: "pretty" }}>
+        {t("notifications_none_for_any_description")}
+      </Typography>
+      <Box
+        sx={{
+          p: 1.5,
+          mb: 2.5,
+          borderRadius: "10px",
+          backgroundColor: "action.hover",
+          fontFamily: "monospace",
+          fontSize: "0.8rem",
+          overflowX: "auto",
+          textAlign: "left",
+          maxWidth: 340,
+          mx: "auto",
+        }}
+      >
+        <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 0.5, fontWeight: 600 }}>
+          {t("notifications_example")}:
+        </Typography>
+        <code>{`$ curl -d "Hi" ${topicUrlResolved}`}</code>
+      </Box>
+      <Box sx={{ color: "text.secondary", fontSize: "0.85rem" }}>
         <ForMoreDetails />
-      </Paragraph>
+      </Box>
     </VerticallyCenteredContainer>
   );
 };
 
 const NoSubscriptions = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [dialogOpen, setDialogOpen] = useState(false);
+
   return (
-    <VerticallyCenteredContainer maxWidth="xs">
-      <Typography variant="h5" align="center" sx={{ paddingBottom: 1 }}>
-        <img src={logoOutline} height="64" width="64" alt={t("action_bar_logo_alt")} />
-        <br />
+    <VerticallyCenteredContainer maxWidth="xs" sx={{ py: 6, px: 2, textAlign: "center" }}>
+      <Box
+        sx={{
+          width: 72,
+          height: 72,
+          borderRadius: "50%",
+          backgroundColor: "action.hover",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          mx: "auto",
+          mb: 2.5,
+        }}
+      >
+        <img src={logoOutline} height="40" width="40" alt={t("action_bar_logo_alt")} style={{ opacity: 0.85 }} />
+      </Box>
+
+      <Typography
+        variant="h6"
+        sx={{
+          fontWeight: 700,
+          letterSpacing: "-0.01em",
+          mb: 1.5,
+          textWrap: "balance",
+        }}
+      >
         {t("notifications_no_subscriptions_title")}
       </Typography>
-      <Paragraph>
+
+      <Typography
+        variant="body2"
+        color="text.secondary"
+        sx={{
+          mb: 3.5,
+          lineHeight: 1.6,
+          maxWidth: 320,
+          mx: "auto",
+          textWrap: "pretty",
+        }}
+      >
         {t("notifications_no_subscriptions_description", {
           linktext: t("nav_button_subscribe"),
         })}
-      </Paragraph>
-      <Paragraph>
+      </Typography>
+
+      <Button
+        variant="contained"
+        color="primary"
+        size="medium"
+        startIcon={<AddIcon />}
+        onClick={() => setDialogOpen(true)}
+        sx={{
+          borderRadius: "14px",
+          px: 3,
+          py: 1,
+          fontWeight: 600,
+          mx: "auto",
+          mb: 3,
+          boxShadow: "none",
+        }}
+      >
+        {t("nav_button_subscribe")}
+      </Button>
+
+      <Box sx={{ color: "text.secondary", fontSize: "0.85rem" }}>
         <ForMoreDetails />
-      </Paragraph>
+      </Box>
+
+      <SubscribeDialog
+        open={dialogOpen}
+        onCancel={() => setDialogOpen(false)}
+        onSuccess={(sub) => {
+          setDialogOpen(false);
+          navigate(routes.forSubscription(sub));
+        }}
+      />
     </VerticallyCenteredContainer>
   );
 };
