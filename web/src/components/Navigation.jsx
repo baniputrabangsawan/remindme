@@ -2,10 +2,9 @@ import {
   Alert,
   AlertTitle,
   Badge,
-  BottomNavigation,
-  BottomNavigationAction,
   Box,
   Button,
+  ButtonBase,
   CircularProgress,
   Divider,
   Drawer,
@@ -32,6 +31,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import ChatBubble from "@mui/icons-material/ChatBubble";
 import MoreVert from "@mui/icons-material/MoreVert";
 import NotificationsOffOutlined from "@mui/icons-material/NotificationsOffOutlined";
+import NotificationsOutlined from "@mui/icons-material/NotificationsOutlined";
+import CreateOutlined from "@mui/icons-material/CreateOutlined";
+import TagOutlined from "@mui/icons-material/TagOutlined";
+import SettingsOutlined from "@mui/icons-material/SettingsOutlined";
 import Send from "@mui/icons-material/Send";
 import ArticleIcon from "@mui/icons-material/Article";
 import { Trans, useTranslation } from "react-i18next";
@@ -59,7 +62,7 @@ const Navigation = (props) => {
   const navigationList = <NavList {...props} />;
   return (
     <Box component="nav" role="navigation" sx={{ width: { sm: Navigation.width }, flexShrink: { sm: 0 } }}>
-      <MobileTabBar {...props} />
+      {!props.selectedSubscription && <MobileTabBar {...props} />}
       {/* Mobile drawer; only shown if menu icon clicked (mobile open) and display is small */}
       <Drawer
         variant="temporary"
@@ -94,58 +97,147 @@ Navigation.width = navWidth;
 // Mobile bottom tab bar: primary destinations one tap away on phones (360px and up).
 // Secondary items (topics, account, docs, alerts) stay in the hamburger drawer.
 const MobileTabBar = (props) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const subscriptions = props.subscriptions || [];
   const newCount = subscriptions.reduce((sum, s) => sum + (s.new || 0), 0);
 
+  const isIndo = i18n.language?.startsWith("id");
+
+  const tabs = [
+    {
+      id: "all",
+      label: isIndo ? "Semua" : "All",
+      ariaLabel: t("nav_button_all_notifications"),
+      icon: (
+        <Badge
+          badgeContent={newCount > 99 ? "99+" : newCount}
+          color="error"
+          invisible={newCount === 0}
+          sx={{
+            "& .MuiBadge-badge": {
+              fontSize: "0.625rem",
+              height: 16,
+              minWidth: 16,
+              padding: "0 4px",
+            },
+          }}
+        >
+          <NotificationsOutlined sx={{ fontSize: 22 }} />
+        </Badge>
+      ),
+      selected: location.pathname === config.app_root,
+      onClick: () => navigate(routes.app),
+    },
+    {
+      id: "publish",
+      label: isIndo ? "Kirim" : "Send",
+      ariaLabel: t("nav_button_publish_message"),
+      icon: <CreateOutlined sx={{ fontSize: 22 }} />,
+      selected: false,
+      onClick: () => props.onPublishMessageClick(),
+    },
+    {
+      id: "topics",
+      label: isIndo ? "Topik" : "Topics",
+      ariaLabel: t("nav_topics_title"),
+      icon: <TagOutlined sx={{ fontSize: 22 }} />,
+      selected: false,
+      onClick: () => props.onMobileDrawerToggle(),
+    },
+    {
+      id: "settings",
+      label: isIndo ? "Setelan" : "Settings",
+      ariaLabel: t("nav_button_settings"),
+      icon: <SettingsOutlined sx={{ fontSize: 22 }} />,
+      selected: location.pathname === routes.settings,
+      onClick: () => navigate(routes.settings),
+    },
+  ];
+
   return (
-    <BottomNavigation
+    <Box
+      component="nav"
+      aria-label="Mobile Navigation Bar"
       sx={{
-        display: { xs: "flex", sm: "none" },
+        display: { xs: "grid", sm: "none" },
+        gridTemplateColumns: "repeat(4, 1fr)",
         position: "fixed",
         bottom: 0,
         left: 0,
         right: 0,
         zIndex: 1100,
+        height: "56px",
+        paddingBottom: "env(safe-area-inset-bottom, 0px)",
+        boxSizing: "content-box",
+        backgroundColor: (theme) =>
+          theme.palette.mode === "light" ? "rgba(255, 255, 255, 0.95)" : "rgba(18, 18, 20, 0.95)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
         borderTop: "1px solid",
         borderColor: "divider",
-        paddingBottom: "env(safe-area-inset-bottom)",
-        height: "auto",
       }}
     >
-      <BottomNavigationAction
-        label={t("nav_button_all_notifications")}
-        icon={
-          newCount > 0 ? (
-            <Badge badgeContent={newCount > 99 ? "99+" : newCount} color="primary">
-              <ChatBubbleOutlineIcon />
-            </Badge>
-          ) : (
-            <ChatBubbleOutlineIcon />
-          )
-        }
-        selected={location.pathname === config.app_root}
-        onClick={() => navigate(routes.app)}
-      />
-      <BottomNavigationAction
-        label={t("nav_button_publish_message")}
-        icon={<Send />}
-        onClick={() => props.onPublishMessageClick()}
-      />
-      <BottomNavigationAction
-        label={t("nav_button_subscribe")}
-        icon={<AddIcon />}
-        onClick={() => props.onMobileDrawerToggle()}
-      />
-      <BottomNavigationAction
-        label={t("nav_button_settings")}
-        icon={<SettingsIcon />}
-        selected={location.pathname === routes.settings}
-        onClick={() => navigate(routes.settings)}
-      />
-    </BottomNavigation>
+      {tabs.map((tab) => (
+        <ButtonBase
+          key={tab.id}
+          onClick={tab.onClick}
+          aria-label={tab.ariaLabel}
+          aria-selected={tab.selected}
+          role="tab"
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+            height: "56px",
+            padding: 0,
+            gap: "2px",
+            color: tab.selected ? "text.primary" : "text.secondary",
+            transition: "color 150ms ease-out",
+            "&:active .tab-icon-pill": {
+              transform: "scale(0.92)",
+            },
+          }}
+        >
+          <Box
+            className="tab-icon-pill"
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "48px",
+              height: "28px",
+              borderRadius: "14px",
+              backgroundColor: tab.selected
+                ? (theme) =>
+                    theme.palette.mode === "light"
+                      ? "rgba(0, 0, 0, 0.08)"
+                      : "rgba(255, 255, 255, 0.12)"
+                : "transparent",
+              transition:
+                "background-color 150ms ease-out, transform 150ms cubic-bezier(0.23, 1, 0.32, 1)",
+            }}
+          >
+            {tab.icon}
+          </Box>
+          <Typography
+            variant="caption"
+            sx={{
+              fontSize: "0.6875rem",
+              fontWeight: tab.selected ? 600 : 500,
+              lineHeight: 1,
+              letterSpacing: "0.01em",
+              color: "inherit",
+            }}
+          >
+            {tab.label}
+          </Typography>
+        </ButtonBase>
+      ))}
+    </Box>
   );
 };
 

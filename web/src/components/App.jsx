@@ -177,7 +177,7 @@ const Main = (props) => (
       flexGrow: 1,
       flexDirection: "column",
       padding: { xs: 0, md: 3 },
-      paddingBottom: { xs: "calc(56px + env(safe-area-inset-bottom) + 72px)", md: 3 },
+      paddingBottom: { xs: "calc(56px + env(safe-area-inset-bottom) + 16px)", md: 3 },
       width: { sm: `calc(100% - ${Navigation.width}px)` },
       backgroundColor: ({ palette }) => (palette.mode === "light" ? "#f7f7f8" : "#0b0b0d"),
       overflow: "auto",

@@ -140,35 +140,6 @@ const baseThemeOptions = {
         },
       },
     },
-    MuiBottomNavigation: {
-      styleOverrides: {
-        root: {
-          height: "auto",
-        },
-      },
-    },
-    MuiBottomNavigationAction: {
-      styleOverrides: {
-        root: {
-          minWidth: 0,
-          paddingTop: "8px",
-          paddingBottom: "8px",
-          color: "text.secondary",
-          transition: "color 150ms ease-out",
-          "&.Mui-selected": {
-            color: "text.primary",
-          },
-        },
-        label: {
-          fontSize: "0.7rem",
-          fontWeight: 500,
-          "&.Mui-selected": {
-            fontSize: "0.7rem",
-            fontWeight: 600,
-          },
-        },
-      },
-    },
   },
 };
 

@@ -1,5 +1,6 @@
 import { AppBar, Toolbar, IconButton, Typography, Box, MenuItem, Button, Divider, ListItemIcon, useTheme } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import * as React from "react";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -29,6 +30,7 @@ const ActionBar = (props) => {
   const theme = useTheme();
   const { t } = useTranslation();
   const location = useLocation();
+  const navigate = useNavigate();
   const isLaunchedPWA = useIsLaunchedPWA();
 
   let title = "remindme";
@@ -71,17 +73,28 @@ const ActionBar = (props) => {
           alignItems: "center",
         }}
       >
-        <IconButton
-          color="inherit"
-          edge="start"
-          aria-label={t("action_bar_show_menu")}
-          onClick={props.onMobileDrawerToggle}
-          sx={{ mr: 2, display: { sm: "none" } }}
-        >
-          <MenuIcon />
-        </IconButton>
+        {props.selected ? (
+          <IconButton
+            color="inherit"
+            edge="start"
+            aria-label={t("nav_button_all_notifications")}
+            onClick={() => navigate(routes.app)}
+            sx={{ mr: 1.5, display: { sm: "none" } }}
+          >
+            <ArrowBackIcon />
+          </IconButton>
+        ) : (
+          <IconButton
+            color="inherit"
+            edge="start"
+            aria-label={t("action_bar_show_menu")}
+            onClick={props.onMobileDrawerToggle}
+            sx={{ mr: 2, display: { sm: "none" } }}
+          >
+            <MenuIcon />
+          </IconButton>
+        )}
         <Box
-          component="img"
           src={logo}
           alt={t("action_bar_logo_alt")}
           sx={{
