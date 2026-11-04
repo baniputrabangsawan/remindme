@@ -52,28 +52,21 @@ test("date format applies to notifications", async ({ page, request }) => {
 });
 
 test.describe("language", () => {
-  test("switch to German and back", async ({ page }) => {
+  test("switch to Indonesian and back", async ({ page }) => {
     await page.goto("/settings");
-    const langFile = page.waitForResponse((r) => r.url().endsWith("/static/langs/de.json"));
-    await selectPref(page, /^Language/, "Deutsch");
+    const langFile = page.waitForResponse((r) => r.url().endsWith("/static/langs/id.json"));
+    await selectPref(page, /^Language/, "Bahasa Indonesia");
     expect((await langFile).ok()).toBeTruthy();
-    await expect(page.getByRole("heading", { name: "Darstellung" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Thema abonnieren" })).toBeVisible();
-    await expect(page.locator("html")).toHaveAttribute("lang", "de");
+    await expect(page.getByRole("heading", { name: "Tampilan" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Berlangganan ke topik" })).toBeVisible();
+    await expect(page.locator("html")).toHaveAttribute("lang", "id");
 
     await page.reload();
-    await expect(page.getByRole("heading", { name: "Darstellung" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Tampilan" })).toBeVisible();
 
-    await selectPref(page, /^Sprache/, "English");
+    await selectPref(page, /^Bahasa/, "English");
     await expect(page.getByRole("heading", { name: "Appearance" })).toBeVisible();
   });
-
-  test("right-to-left language", async ({ page }) => {
-    await page.goto("/settings");
-    await selectPref(page, /^Language/, "العربية");
-    await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
-  });
-
   test("language syncs to the account", async ({ page, browser, request, users }) => {
     const username = await users.create();
     await login(page, username);

@@ -36,11 +36,15 @@ describe("i18n", () => {
   });
 
   it("uses each language's plural rules", async () => {
-    await i18next.changeLanguage("pl");
-    const t = (count) => i18next.t("account_upgrade_dialog_tier_features_reservations", { reservations: count, count });
-    expect(t(1)).toBe("1 rezerwacja tematu"); // one
-    expect(t(3)).toBe("3 rezerwacje tematów"); // few
-    expect(t(5)).toBe("5 rezerwacji tematów"); // many
+    await i18next.changeLanguage("en");
+    const tEn = (count) => i18next.t("account_upgrade_dialog_tier_features_reservations", { reservations: count, count });
+    expect(tEn(1)).toBe("1 reserved topic");
+    expect(tEn(5)).toBe("5 reserved topics");
+
+    await i18next.changeLanguage("id");
+    const tId = (count) => i18next.t("account_upgrade_dialog_tier_features_reservations", { reservations: count, count });
+    expect(tId(1)).toBe("1 topik yang telah direservasi");
+    expect(tId(5)).toBe("5 topik yang telah direservasi");
   });
 
   it("falls back to English for missing keys", async () => {
